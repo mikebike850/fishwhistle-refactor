@@ -1,6 +1,6 @@
 import React from 'react';
 import { TrendingUp, Calendar, Star } from 'lucide-react';
-import { FishingForecast } from '../types';
+import type { FishingForecast } from '../types'
 
 interface ForecastCardProps {
   forecast: FishingForecast;
