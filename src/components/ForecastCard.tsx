@@ -1,73 +1,142 @@
-import React from 'react';
-import { TrendingUp, Calendar, Star } from 'lucide-react';
-import type { FishingForecast } from '../types'
+// src/components/ForecastCard.tsx
+import { Calendar, TrendingUp, MapPin, Thermometer, Wind, Waves, CloudSun } from 'lucide-react';
+import type { FishingForecast, StrainPairing } from '../types';
 
-interface ForecastCardProps {
-  forecast: FishingForecast;
+type Props = { forecast: FishingForecast };
+
+function fmtDate(iso: string | Date | undefined) {
+  if (!iso) return 'Unknown date';
+  const d = iso instanceof Date ? iso : new Date(iso);
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-export default function ForecastCard({ forecast }: ForecastCardProps) {
-  const getScoreColor = (score: number) => {
-    if (score >= 8) return 'text-green-600 bg-green-100';
-    if (score >= 6) return 'text-yellow-600 bg-yellow-100';
-    return 'text-red-600 bg-red-100';
-  };
+function scoreLabel(score?: number) {
+  const s = typeof score === 'number' ? score : 0;
+  if (s >= 8) return 'Great';
+  if (s >= 6) return 'Good';
+  if (s >= 4) return 'Fair';
+  if (s > 0) return 'Tough';
+  return 'Unrated';
+}
 
-  const getConditionEmoji = (conditions: string) => {
-    switch (conditions.toLowerCase()) {
-      case 'outstanding': return '🔥';
-      case 'excellent': return '⭐';
-      case 'good': return '👍';
-      case 'fair': return '👌';
-      default: return '🎣';
-    }
-  };
+export default function ForecastCard({ forecast }: Props) {
+  const { location, date, score, recommendation, conditions, strainPairing, notes } = forecast;
+
+  const waterTempF = conditions?.waterTempF;
+  const flowCfs = conditions?.flowCfs;
+  const windMph = conditions?.windMph;
+  const sky = conditions?.sky;
+  const pressureMb = conditions?.pressureMb;
+
+  const pct = Math.max(0, Math.min(10, typeof score === 'number' ? score : 0)) * 10;
 
   return (
-    <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">{forecast.location}</h3>
-        <div className="flex items-center space-x-1 text-sm text-gray-500">
-          <Calendar className="w-4 h-4" />
-          <span>{forecast.date.toLocaleDateString()}</span>
+    <article className="rounded-xl border p-4 space-y-3">
+      {/* Header */}
+      <header className="flex items-center justify-between">
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <MapPin size={16} aria-hidden />
+          <span className="font-medium text-gray-900">{location}</span>
         </div>
-      </div>
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <Calendar size={16} aria-hidden />
+          <time>{fmtDate(date)}</time>
+        </div>
+      </header>
 
       {/* Score */}
-      <div className="flex items-center justify-center mb-6">
-        <div className={`rounded-full p-4 ${getScoreColor(forecast.score)}`}>
-          <div className="text-center">
-            <div className="text-3xl font-bold">{forecast.score}</div>
-            <div className="text-sm font-medium">Score</div>
+      <div>
+        <div className="flex items-center justify-between text-sm">
+          <div className="flex items-center gap-2">
+            <TrendingUp size={16} aria-hidden />
+            <span className="font-medium">Forecast</span>
           </div>
+          <span className="text-gray-600">{scoreLabel(score)}</span>
+        </div>
+        <div className="mt-2 h-2 w-full rounded-full bg-gray-200">
+          <div
+            className="h-2 rounded-full bg-emerald-500 transition-all"
+            style={{ width: `${pct}%` }}
+            aria-label="forecast score"
+          />
         </div>
       </div>
 
       {/* Conditions */}
-      <div className="text-center mb-4">
-        <div className="flex items-center justify-center space-x-2 mb-2">
-          <span className="text-2xl">{getConditionEmoji(forecast.conditions)}</span>
-          <span className="text-xl font-semibold text-gray-900">{forecast.conditions}</span>
-        </div>
-        <p className="text-gray-600">{forecast.recommendation}</p>
-      </div>
-
-      {/* Strain Pairing */}
-      {forecast.strainPairing && (
-        <div className="mt-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
-          <div className="flex items-center space-x-2 mb-2">
-            <span className="text-green-600 font-medium">🌿 Perfect Pairing:</span>
-            <span className="font-semibold text-green-800">{forecast.strainPairing.name}</span>
-          </div>
-          <p className="text-sm text-green-700">{forecast.strainPairing.reason}</p>
-        </div>
+      {(waterTempF !== undefined ||
+        flowCfs !== undefined ||
+        windMph !== undefined ||
+        sky ||
+        pressureMb !== undefined) && (
+        <section className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+          {waterTempF !== undefined && (
+            <div className="flex items-center gap-2">
+              <Thermometer size={16} aria-hidden />
+              <span>Water {waterTempF} °F</span>
+            </div>
+          )}
+          {flowCfs !== undefined && (
+            <div className="flex items-center gap-2">
+              <Waves size={16} aria-hidden />
+              <span>Flow {flowCfs} cfs</span>
+            </div>
+          )}
+          {windMph !== undefined && (
+            <div className="flex items-center gap-2">
+              <Wind size={16} aria-hidden />
+              <span>Wind {windMph} mph</span>
+            </div>
+          )}
+          {pressureMb !== undefined && (
+            <div className="flex items-center gap-2">
+              {/* Using CloudSun icon set above, but Gauge would also be fine if you added it */}
+              <CloudSun size={16} aria-hidden />
+              <span>Pressure {pressureMb} mb</span>
+            </div>
+          )}
+          {sky && (
+            <div className="flex items-center gap-2">
+              <CloudSun size={16} aria-hidden />
+              <span>Sky {sky}</span>
+            </div>
+          )}
+        </section>
       )}
 
-      {/* Action Button */}
-      <button className="w-full mt-4 bg-gradient-to-r from-emerald-500 to-teal-600 text-white py-3 px-4 rounded-lg font-medium hover:from-emerald-600 hover:to-teal-700 transition-all duration-200 flex items-center justify-center space-x-2">
-        <TrendingUp className="w-5 h-5" />
-        <span>Get Detailed Forecast</span>
-      </button>
-    </div>
+      {/* Recommendation */}
+      {recommendation && (
+        <section className="rounded-lg bg-emerald-50 border border-emerald-200 p-3">
+          <p className="text-sm text-emerald-800">{recommendation}</p>
+        </section>
+      )}
+
+      {/* Strain Pairing */}
+      {Array.isArray(strainPairing) && strainPairing.length > 0 && (
+        <section className="rounded-lg bg-gray-50 border p-3">
+          <h4 className="text-sm font-semibold mb-2">Suggested pairings</h4>
+          <ul className="space-y-1 text-sm">
+            {strainPairing.map((sp: StrainPairing, i: number) => (
+              <li key={i} className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1">
+                  <CloudSun size={14} aria-hidden />
+                  <span className="text-gray-700">{sp.timeOfDay}</span>
+                </span>
+                <span className="text-gray-500">•</span>
+                <span className="text-gray-700">{sp.species}</span>
+                {sp.tip ? (
+                  <>
+                    <span className="text-gray-500">•</span>
+                    <span className="text-gray-700">{sp.tip}</span>
+                  </>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* Notes */}
+      {notes && <p className="text-sm text-gray-700">{notes}</p>}
+    </article>
   );
 }

@@ -1,221 +1,132 @@
-import { FishingReport, WaterData, FishingForecast, User } from '../types';
+// src/data/mockData.ts
+import type {
+  FishingForecast,
+  FishingReport,
+  WaterData,
+  Conditions,
+  StrainPairing,
+  User,
+} from '../types';
 
-export const mockUsers: User[] = [
-  {
-    id: '1',
-    username: 'AngleMaster420',
-    email: 'angle@example.com',
-    avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop',
-    tier: 'premium',
-    joinedAt: new Date('2024-01-15')
-  },
-  {
-    id: '2',
-    username: 'StreamChaser',
-    email: 'stream@example.com',
-    avatar: 'https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop',
-    tier: 'pro',
-    joinedAt: new Date('2023-11-20')
-  },
-  {
-    id: '3',
-    username: 'CatchVibes',
-    email: 'catch@example.com',
-    avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop',
-    tier: 'free',
-    joinedAt: new Date('2024-02-10')
-  }
-];
+const userMike: User = {
+  username: 'Mike',
+  avatar: 'https://i.pravatar.cc/100?u=mike',
+  tier: 'premium',
+};
 
-export const mockReports: FishingReport[] = [
-  {
-    id: '1',
-    userId: '1',
-    user: mockUsers[0],
-    location: {
-      name: 'Colorado River',
-      lat: 40.0583,
-      lng: -105.2081
-    },
-    species: 'Rainbow Trout',
-    gear: 'Fly Rod, Size 16 Adams',
-    conditions: {
-      weather: 'Partly Cloudy',
-      temperature: 68,
-      waterClarity: 'clear',
-      flowRate: 450
-    },
-    strainPairing: {
-      name: 'Blue Dream',
-      reason: 'Perfect for those dreamy mountain vibes while waiting for the perfect cast 🎣'
-    },
-    images: ['https://images.pexels.com/photos/1123982/pexels-photo-1123982.jpeg?auto=compress&cs=tinysrgb&w=800'],
-    description: 'Absolutely crushing it today! Water conditions are perfect and the fish are biting like crazy. Caught 6 rainbows in 2 hours.',
-    timestamp: new Date('2024-01-20T10:30:00'),
-    likes: 23,
-    comments: [
-      {
-        id: '1',
-        userId: '2',
-        user: mockUsers[1],
-        content: 'Dude, that spot is legendary! Nice catch! 🔥',
-        timestamp: new Date('2024-01-20T11:15:00')
-      }
-    ]
-  },
-  {
-    id: '2',
-    userId: '2',
-    user: mockUsers[1],
-    location: {
-      name: 'Snake River',
-      lat: 43.4799,
-      lng: -110.7624
-    },
-    species: 'Cutthroat Trout',
-    gear: 'Spinning Rod, Rooster Tail',
-    conditions: {
-      weather: 'Sunny',
-      temperature: 72,
-      waterClarity: 'murky',
-      flowRate: 320
-    },
-    strainPairing: {
-      name: 'Green Crack',
-      reason: 'High energy strain for those active fishing days when you need to stay alert 💚'
-    },
-    images: ['https://images.pexels.com/photos/1123982/pexels-photo-1123982.jpeg?auto=compress&cs=tinysrgb&w=800'],
-    description: 'Guide trip today was epic! Clients landed some beautiful cutthroats. Water is a bit murky from recent rains but fish are still active.',
-    timestamp: new Date('2024-01-19T14:45:00'),
-    likes: 31,
-    comments: []
-  },
-  {
-    id: '3',
-    userId: '3',
-    user: mockUsers[2],
-    location: {
-      name: 'Yellowstone River',
-      lat: 45.6870,
-      lng: -110.9382
-    },
-    species: 'Brown Trout',
-    gear: 'Fly Rod, Woolly Bugger',
-    conditions: {
-      weather: 'Overcast',
-      temperature: 65,
-      waterClarity: 'clear',
-      flowRate: 280
-    },
-    description: 'First time at this spot and wow! The browns here are massive. Landed a 20-incher on my third cast.',
-    timestamp: new Date('2024-01-18T16:20:00'),
-    likes: 18,
-    comments: [
-      {
-        id: '2',
-        userId: '1',
-        user: mockUsers[0],
-        content: 'Welcome to the addiction! That spot never disappoints 😄',
-        timestamp: new Date('2024-01-18T17:00:00')
-      }
-    ]
-  }
-];
+const userGuide: User = {
+  username: 'RiverGuide',
+  avatar: 'https://i.pravatar.cc/100?u=guide',
+  tier: 'pro',
+};
 
 export const mockWaterData: WaterData[] = [
   {
-    location: 'Colorado River',
-    temperature: 68,
-    flowRate: 450,
-    clarity: 'clear',
-    barometricPressure: 30.15,
-    lastUpdated: new Date()
+    locationId: 'chattahoochee',
+    flowCfs: 200,
+    temperatureF: 54,
+    updatedAt: new Date().toISOString(),
   },
   {
-    location: 'Snake River',
-    temperature: 72,
-    flowRate: 320,
-    clarity: 'murky',
-    barometricPressure: 29.98,
-    lastUpdated: new Date()
+    locationId: 'bow-river',
+    flowCfs: 120,
+    temperatureF: 50,
+    updatedAt: new Date().toISOString(),
   },
   {
-    location: 'Yellowstone River',
-    temperature: 65,
-    flowRate: 280,
-    clarity: 'clear',
-    barometricPressure: 30.22,
-    lastUpdated: new Date()
-  }
+    locationId: 'madison',
+    flowCfs: 380,
+    temperatureF: 57,
+    updatedAt: new Date().toISOString(),
+  },
+];
+
+const baseCond: Conditions = {
+  waterTempF: 54,
+  flowCfs: 200,
+  windMph: 5,
+  sky: 'partly cloudy',
+  pressureMb: 1016,
+};
+
+const pairings: StrainPairing[] = [
+  { timeOfDay: 'early morning', species: 'trout', tip: 'small nymphs' },
+  { timeOfDay: 'evening', species: 'trout', tip: 'emergers' },
 ];
 
 export const mockForecasts: FishingForecast[] = [
   {
-    location: 'Colorado River',
-    date: new Date(Date.now() + 24 * 60 * 60 * 1000),
-    score: 8.5,
-    conditions: 'Excellent',
-    recommendation: 'Prime time fishing! Early morning and evening will be hot.',
-    strainPairing: {
-      name: 'Sour Diesel',
-      reason: 'Energizing sativa to keep you focused during those prime fishing hours ⚡'
-    }
+    location: 'Chattahoochee River',
+    date: new Date().toISOString(),
+    score: 7,
+    recommendation: 'Fish the seams and slower edges',
+    conditions: baseCond,
+    strainPairing: pairings,
+    notes: 'Flow stable, good clarity',
   },
   {
-    location: 'Snake River',
-    date: new Date(Date.now() + 24 * 60 * 60 * 1000),
-    score: 6.2,
-    conditions: 'Fair',
-    recommendation: 'Decent conditions but try deeper water. Fish may be sluggish.',
-    strainPairing: {
-      name: 'Granddaddy Purple',
-      reason: 'Chill indica for those slow bite days when patience is key 🟣'
-    }
+    location: 'Bow River',
+    date: new Date().toISOString(),
+    score: 6,
+    recommendation: 'Work riffles with streamers, switch to nymphs mid-day',
+    conditions: { ...baseCond, flowCfs: 120, waterTempF: 50, sky: 'clear' },
+    strainPairing: [{ timeOfDay: 'midday', species: 'trout', tip: 'size 18 pheasant tail' }],
   },
   {
-    location: 'Yellowstone River',
-    date: new Date(Date.now() + 24 * 60 * 60 * 1000),
-    score: 9.1,
-    conditions: 'Outstanding',
-    recommendation: 'Fire conditions! Get out there ASAP. All techniques working.',
-    strainPairing: {
-      name: 'Jack Herer',
-      reason: 'Perfect hybrid for an epic day on the water - creative and focused 🎯'
-    }
-  }
+    location: 'Madison River',
+    date: new Date().toISOString(),
+    score: 8,
+    recommendation: 'Dry-dropper near banks and pockets',
+    conditions: { ...baseCond, flowCfs: 380, waterTempF: 57, windMph: 8 },
+    strainPairing: [{ timeOfDay: 'afternoon', species: 'trout', tip: 'hopper-dropper' }],
+  },
 ];
 
-export const strainPairings = [
+export const mockReports: FishingReport[] = [
   {
-    name: 'Blue Dream',
-    reason: 'Perfect for those dreamy mountain vibes while waiting for the perfect cast 🎣'
+    id: 'r-1',
+    location: { name: 'Chattahoochee River', lat: 33.8, lng: -84.3 },
+    date: new Date().toISOString(),
+    description: 'Caught two browns on size 18 pheasant tail near the bend.',
+    user: userMike,
+    images: ['https://picsum.photos/seed/catch1/1200/600'],
+    species: 'brown trout',
+    conditions: { temperature: 54, waterClarity: 'clear', flowRate: 200 },
+    gear: '9ft 5wt, 5x tippet',
+    likes: 3,
+    comments: [
+      {
+        id: 'c-1',
+        user: userGuide,
+        content: 'Nice work. Try the upper run at dusk.',
+        timestamp: new Date().toISOString(),
+      },
+    ],
   },
   {
-    name: 'Green Crack',
-    reason: 'High energy strain for those active fishing days when you need to stay alert 💚'
+    id: 'r-2',
+    location: { name: 'Bow River', lat: 51.05, lng: -114.07 },
+    date: new Date().toISOString(),
+    description: 'Good streamer bite early. Nymphs were better after 11am.',
+    user: userGuide,
+    images: ['https://picsum.photos/seed/catch2/1200/600'],
+    species: 'rainbow trout',
+    conditions: { temperature: 50, waterClarity: 'slightly stained', flowRate: 120 },
+    gear: '7wt with sinking tip',
+    likes: 10,
+    comments: [],
   },
   {
-    name: 'Sour Diesel',
-    reason: 'Energizing sativa to keep you focused during those prime fishing hours ⚡'
+    id: 'r-3',
+    location: { name: 'Madison River', lat: 44.6, lng: -111.7 },
+    date: new Date().toISOString(),
+    description: 'Hopper-dropper produced along the banks. Wind picked up.',
+    user: userMike,
+    images: ['https://picsum.photos/seed/catch3/1200/600'],
+    species: 'brown trout',
+    conditions: { temperature: 57, waterClarity: 'clear', flowRate: 380 },
+    gear: 'Hopper with size 16 dropper',
+    likes: 6,
+    comments: [],
   },
-  {
-    name: 'Granddaddy Purple',
-    reason: 'Chill indica for those slow bite days when patience is key 🟣'
-  },
-  {
-    name: 'Jack Herer',
-    reason: 'Perfect hybrid for an epic day on the water - creative and focused 🎯'
-  },
-  {
-    name: 'OG Kush',
-    reason: 'Classic strain for classic fishing spots - never goes out of style 🌿'
-  },
-  {
-    name: 'White Widow',
-    reason: 'Clear-headed high perfect for reading water conditions like a pro 🕷️'
-  },
-  {
-    name: 'Pineapple Express',
-    reason: 'Tropical vibes for those sunny lake days when the fish are jumping 🍍'
-  }
 ];

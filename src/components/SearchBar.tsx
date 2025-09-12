@@ -1,57 +1,44 @@
-import React, { useState } from 'react';
-import { Search, MapPin, Fish, Waves } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Search, X } from 'lucide-react';
+import { useSearch } from '../context/SearchContext';
 
-interface SearchBarProps {
-  onSearch: (query: string) => void;
-}
+export default function SearchBar() {
+  const { query, setQuery } = useSearch();
+  const [value, setValue] = useState(query);
 
-export default function SearchBar({ onSearch }: SearchBarProps) {
-  const [query, setQuery] = useState('');
+  useEffect(() => {
+    setValue(query);
+  }, [query]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSearch(query);
+    setQuery(value.trim());
+  };
+
+  const onClear = () => {
+    setValue('');
+    setQuery('');
   };
 
   return (
-    <div className="relative">
-      <form onSubmit={handleSubmit} className="relative">
-        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <Search className="h-5 w-5 text-gray-400" />
-        </div>
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="block w-full pl-12 pr-4 py-4 text-lg border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm"
-          placeholder="Search by location, water source, fish type, or strain pairing..."
-        />
+    <form onSubmit={onSubmit} className="relative">
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+      <input
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder="Search locations, species, reports"
+        className="w-full rounded-lg border border-gray-300 pl-9 pr-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400"
+      />
+      {value ? (
         <button
-          type="submit"
-          className="absolute inset-y-0 right-0 pr-4 flex items-center"
+          type="button"
+          onClick={onClear}
+          aria-label="Clear search"
+          className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600"
         >
-          <div className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg transition-colors">
-            Search
-          </div>
+          <X className="w-4 h-4" />
         </button>
-      </form>
-      
-      {/* Quick search suggestions */}
-      <div className="mt-3 flex flex-wrap gap-2">
-        <span className="text-sm text-gray-600">Popular:</span>
-        {['Colorado River', 'Rainbow Trout', 'Blue Dream', 'Fly Fishing'].map((suggestion) => (
-          <button
-            key={suggestion}
-            onClick={() => {
-              setQuery(suggestion);
-              onSearch(suggestion);
-            }}
-            className="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full transition-colors"
-          >
-            {suggestion}
-          </button>
-        ))}
-      </div>
-    </div>
+      ) : null}
+    </form>
   );
 }

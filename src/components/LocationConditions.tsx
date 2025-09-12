@@ -1,87 +1,70 @@
-import React from 'react';
-import { MapPin, Thermometer, Droplets, Eye, Wind, TrendingUp } from 'lucide-react';
-import { WaterData, FishingForecast } from '../types';
+// src/components/LocationConditions.tsx
+import { Thermometer, Wind, Waves, CloudSun, Gauge } from 'lucide-react';
+import type { Conditions } from '../types';
 
-interface LocationConditionsProps {
-  location: string;
-  waterData: WaterData;
-  forecast: FishingForecast;
+// Support both your global Conditions shape and the simpler one used inside reports.
+type LegacyReportConditions = { temperature?: number; waterClarity?: string; flowRate?: number };
+type Props = { conditions: Conditions | LegacyReportConditions; title?: string };
+
+function pickNumber(v: unknown): number | undefined {
+  return typeof v === 'number' ? v : undefined;
+}
+function pickString(v: unknown): string | undefined {
+  return typeof v === 'string' ? v : undefined;
 }
 
-export default function LocationConditions({ location, waterData, forecast }: LocationConditionsProps) {
-  const getScoreColor = (score: number) => {
-    if (score >= 8) return 'text-green-600 bg-green-100';
-    if (score >= 6) return 'text-yellow-600 bg-yellow-100';
-    return 'text-red-600 bg-red-100';
-  };
-
-  const getFlowStatus = (flowRate: number) => {
-    if (flowRate < 200) return { status: 'Low', color: 'text-red-500' };
-    if (flowRate < 400) return { status: 'Normal', color: 'text-green-500' };
-    return { status: 'High', color: 'text-orange-500' };
-  };
-
-  const flowStatus = getFlowStatus(waterData.flowRate);
+export default function LocationConditions({ conditions, title = 'Conditions' }: Props) {
+  // Normalize both shapes to one set of optional values
+  const flowCfs =
+    'flowCfs' in conditions
+      ? pickNumber(conditions.flowCfs)
+      : pickNumber((conditions as LegacyReportConditions).flowRate);
+  const waterTempF =
+    'waterTempF' in conditions
+      ? pickNumber(conditions.waterTempF)
+      : pickNumber((conditions as LegacyReportConditions).temperature);
+  const windMph = 'windMph' in conditions ? pickNumber(conditions.windMph) : undefined;
+  const pressureMb = 'pressureMb' in conditions ? pickNumber(conditions.pressureMb) : undefined;
+  const sky =
+    'sky' in conditions
+      ? pickString(conditions.sky)
+      : pickString((conditions as LegacyReportConditions).waterClarity);
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center space-x-2">
-          <MapPin className="w-5 h-5 text-emerald-600" />
-          <h2 className="text-xl font-bold text-gray-900">{location}</h2>
-          <span className="text-sm text-gray-500">• Your area</span>
-        </div>
-        <div className={`rounded-full px-4 py-2 ${getScoreColor(forecast.score)}`}>
-          <div className="flex items-center space-x-2">
-            <TrendingUp className="w-4 h-4" />
-            <span className="font-bold">{forecast.score}/10</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="text-center p-3 bg-orange-50 rounded-lg">
-          <Thermometer className="w-6 h-6 text-orange-500 mx-auto mb-2" />
-          <div className="text-lg font-semibold text-gray-900">{waterData.temperature}°F</div>
-          <div className="text-sm text-gray-600">Temperature</div>
-        </div>
-        
-        <div className="text-center p-3 bg-blue-50 rounded-lg">
-          <Droplets className={`w-6 h-6 mx-auto mb-2 ${flowStatus.color}`} />
-          <div className="text-lg font-semibold text-gray-900">{waterData.flowRate} cfs</div>
-          <div className={`text-sm ${flowStatus.color}`}>{flowStatus.status} Flow</div>
-        </div>
-        
-        <div className="text-center p-3 bg-cyan-50 rounded-lg">
-          <Eye className="w-6 h-6 text-cyan-500 mx-auto mb-2" />
-          <div className="text-lg font-semibold text-gray-900 capitalize">{waterData.clarity}</div>
-          <div className="text-sm text-gray-600">Clarity</div>
-        </div>
-        
-        <div className="text-center p-3 bg-purple-50 rounded-lg">
-          <Wind className="w-6 h-6 text-purple-500 mx-auto mb-2" />
-          <div className="text-lg font-semibold text-gray-900">{waterData.barometricPressure}"</div>
-          <div className="text-sm text-gray-600">Pressure</div>
-        </div>
-      </div>
-
-      <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg p-4 border border-emerald-200">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="font-semibold text-emerald-800">Today's Forecast</h3>
-          <span className="text-emerald-600 font-medium">{forecast.conditions}</span>
-        </div>
-        <p className="text-emerald-700 text-sm mb-3">{forecast.recommendation}</p>
-        
-        {forecast.strainPairing && (
-          <div className="bg-white bg-opacity-50 rounded-lg p-3">
-            <div className="flex items-center space-x-2 mb-1">
-              <span className="text-green-600 font-medium">🌿 Perfect Pairing:</span>
-              <span className="font-semibold text-green-800">{forecast.strainPairing.name}</span>
-            </div>
-            <p className="text-sm text-green-700">{forecast.strainPairing.reason}</p>
-          </div>
+    <section className="rounded-xl border p-4">
+      <h3 className="font-semibold mb-2">{title}</h3>
+      <ul className="grid grid-cols-2 gap-2 text-sm">
+        {flowCfs !== undefined && (
+          <li className="flex items-center gap-2">
+            <Waves size={16} aria-hidden="true" />
+            <span>Flow {flowCfs} cfs</span>
+          </li>
         )}
-      </div>
-    </div>
+        {waterTempF !== undefined && (
+          <li className="flex items-center gap-2">
+            <Thermometer size={16} aria-hidden="true" />
+            <span>Water {waterTempF} °F</span>
+          </li>
+        )}
+        {windMph !== undefined && (
+          <li className="flex items-center gap-2">
+            <Wind size={16} aria-hidden="true" />
+            <span>Wind {windMph} mph</span>
+          </li>
+        )}
+        {pressureMb !== undefined && (
+          <li className="flex items-center gap-2">
+            <Gauge size={16} aria-hidden="true" />
+            <span>Pressure {pressureMb} mb</span>
+          </li>
+        )}
+        {sky && (
+          <li className="flex items-center gap-2">
+            <CloudSun size={16} aria-hidden="true" />
+            <span>Sky {sky}</span>
+          </li>
+        )}
+      </ul>
+    </section>
   );
 }

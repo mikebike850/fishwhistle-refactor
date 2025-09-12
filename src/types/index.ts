@@ -1,65 +1,67 @@
-export interface User {
-  id: string;
-  username: string;
-  email: string;
-  avatar?: string;
-  tier: 'free' | 'premium' | 'pro';
-  joinedAt: Date;
+// src/types/index.ts
+
+export interface Conditions {
+  waterTempF?: number;
+  flowCfs?: number;
+  windMph?: number;
+  sky?: string;
+  pressureMb?: number;
 }
 
-export interface FishingReport {
-  id: string;
-  userId: string;
-  user: User;
-  location: {
-    name: string;
-    lat: number;
-    lng: number;
-  };
+export interface StrainPairing {
+  timeOfDay: string;
   species: string;
-  gear: string;
-  conditions: {
-    weather: string;
-    temperature: number;
-    waterClarity: 'clear' | 'murky' | 'muddy';
-    flowRate: number;
-  };
-  strainPairing?: {
-    name: string;
-    reason: string;
-  };
-  images?: string[];
-  description: string;
-  timestamp: Date;
-  likes: number;
-  comments: Comment[];
-}
-
-export interface Comment {
-  id: string;
-  userId: string;
-  user: User;
-  content: string;
-  timestamp: Date;
-}
-
-export interface WaterData {
-  location: string;
-  temperature: number;
-  flowRate: number;
-  clarity: 'clear' | 'murky' | 'muddy';
-  barometricPressure: number;
-  lastUpdated: Date;
+  tip?: string;
 }
 
 export interface FishingForecast {
   location: string;
-  date: Date;
-  score: number; // 1-10
-  conditions: string;
-  recommendation: string;
-  strainPairing?: {
-    name: string;
-    reason: string;
-  };
+  date: string | Date;
+  score?: number;
+  recommendation?: string;
+  conditions?: Conditions;
+  strainPairing?: StrainPairing[];
+  notes?: string;
 }
+
+export interface User {
+  id?: string;
+  username: string;
+  avatar: string;
+  tier?: 'pro' | 'premium' | string;
+}
+
+export interface ReportComment {
+  id: string;
+  user: User;
+  content: string;
+  timestamp: string | Date;
+}
+
+export interface FishingReport {
+  id: string;
+  // allow a plain string or an object with optional geo
+  location: string | { name?: string; lat?: number; lng?: number };
+  date: string;
+  text?: string;
+  description?: string;
+  user: User;
+  images?: string[];
+  species?: string;
+  // some code uses a simple shape here
+  conditions?: { temperature?: number; waterClarity?: string; flowRate?: number } | Conditions;
+  gear?: string;
+  likes?: number;
+  comments?: ReportComment[];
+}
+
+export interface WaterData {
+  locationId: string;
+  flowCfs: number;
+  temperatureF?: number;
+  updatedAt?: string;
+}
+
+export type SearchHit =
+  | { kind: 'forecast'; item: FishingForecast }
+  | { kind: 'report'; item: FishingReport };
